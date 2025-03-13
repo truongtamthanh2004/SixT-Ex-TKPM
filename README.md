@@ -54,7 +54,7 @@ Student records are stored in a `students` table with:
 - **Indexed fields for faster lookups**
 - **Timestamps for creation and updates**
 
-## Cấu trúc source code
+## Source Code Structure
 ```
 sixt/
 │── src/
