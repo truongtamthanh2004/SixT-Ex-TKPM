@@ -54,6 +54,30 @@ Student records are stored in a `students` table with:
 - **Indexed fields for faster lookups**
 - **Timestamps for creation and updates**
 
+## Cấu trúc source code
+```
+sixt/
+│── src/
+│   ├── main/
+│   │   ├── java/com/example/sixt/
+│   │   │   ├── commons/ 
+│   │   │   ├── configs/
+│   │   │   ├── controllers/
+│   │   │   ├── exceptions/ 
+│   │   │   ├── models/
+│   │   │   ├── repository/
+│   │   │   ├── services/
+│   │   │   │   ├── impl/
+│   │   │   ├── SixtApplication.java # Main Application Entry
+│   │   ├── resources/
+│   │   │   ├── application.properties
+│   ├── test/
+│── Dockerfile
+│── docker-compose.yml
+│── pom.xml
+│── README.md
+```
+
 ## How to Run the Project
 
 ### Prerequisites
