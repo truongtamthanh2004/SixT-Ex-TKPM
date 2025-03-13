@@ -68,7 +68,7 @@ sixt/
 │   │   │   ├── repository/
 │   │   │   ├── services/
 │   │   │   │   ├── impl/
-│   │   │   ├── SixtApplication.java # Main Application Entry
+│   │   │   ├── SixtApplication.java
 │   │   ├── resources/
 │   │   │   ├── application.properties
 │   ├── test/
