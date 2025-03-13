@@ -7,11 +7,16 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "students")
-public class StudentEntity {
+@Table(name = "students",
+        indexes = {
+                @Index(name = "idx_student_id", columnList = "studentId"),
+                @Index(name = "idx_email", columnList = "email")
+        })
+public class StudentEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
