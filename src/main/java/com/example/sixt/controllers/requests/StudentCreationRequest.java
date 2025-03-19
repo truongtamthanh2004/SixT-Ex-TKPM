@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class StudentCreationRequest implements Serializable {
     @NotBlank(message = "Student id must be not blank")
@@ -23,12 +24,14 @@ public class StudentCreationRequest implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    private Department department;
+    @NotBlank(message = "Department must be not blank")
+    private String department;
 
     private String course;
+
+    @NotBlank(message = "Program must be not blank")
     private String program;
-    private String address;
+    private String nationality;
 
     @Email(message = "Email invalid")
     private String email;
@@ -36,8 +39,11 @@ public class StudentCreationRequest implements Serializable {
     @Pattern(regexp = "^(0[3-9][0-9]{8}|\\+84[3-9][0-9]{8})$", message = "Invalid phone number format")
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    private StudentStatus status;
+    private String status;
+
+    private List<AddressRequest> addresses;
+
+    private IdentityDocumentRequest identityDocument;
 
     public @NotBlank(message = "Student id must be not blank") String getStudentId() {
         return studentId;
@@ -71,11 +77,11 @@ public class StudentCreationRequest implements Serializable {
         this.gender = gender;
     }
 
-    public Department getDepartment() {
+    public String getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department department) {
+    public void setDepartment(String department) {
         this.department = department;
     }
 
@@ -95,12 +101,12 @@ public class StudentCreationRequest implements Serializable {
         this.program = program;
     }
 
-    public String getAddress() {
-        return address;
+    public String getNationality() {
+        return nationality;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
     }
 
     public @Email(message = "Email invalid") String getEmail() {
@@ -119,11 +125,27 @@ public class StudentCreationRequest implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public StudentStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(StudentStatus status) {
+    public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<AddressRequest> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressRequest> addresses) {
+        this.addresses = addresses;
+    }
+
+    public IdentityDocumentRequest getIdentityDocument() {
+        return identityDocument;
+    }
+
+    public void setIdentityDocument(IdentityDocumentRequest identityDocument) {
+        this.identityDocument = identityDocument;
     }
 }

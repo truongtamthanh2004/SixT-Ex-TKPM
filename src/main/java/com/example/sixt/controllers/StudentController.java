@@ -2,6 +2,7 @@ package com.example.sixt.controllers;
 
 import com.example.sixt.controllers.requests.StudentCreationRequest;
 import com.example.sixt.controllers.requests.StudentUpdateRequest;
+import com.example.sixt.controllers.responses.StudentResponse;
 import com.example.sixt.exceptions.InvalidDataException;
 import com.example.sixt.models.StudentEntity;
 import com.example.sixt.services.StudentService;
@@ -31,7 +32,7 @@ public class StudentController {
     @PostMapping("/add")
     public Map<String, Object> addStudent(@RequestBody @Valid StudentCreationRequest student) {
         try {
-            StudentEntity studentEntity = studentService.addStudent(student);
+            StudentResponse studentEntity = studentService.addStudent(student);
 
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("status", HttpStatus.CREATED.value());
@@ -91,12 +92,12 @@ public class StudentController {
     @PatchMapping("/update/{studentId}")
     public Map<String, Object> updateStudent(@PathVariable String studentId, @RequestBody @Valid StudentUpdateRequest student) {
         try {
-            StudentEntity studentEntity = studentService.updateStudent(studentId, student);
+            StudentResponse studentResponse = studentService.updateStudent(studentId, student);
 
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("status", HttpStatus.CREATED.value());
             response.put("message", "Student updated successfully");
-            response.put("data", studentEntity);
+            response.put("data", studentResponse);
 
             return response;
         }
@@ -121,18 +122,18 @@ public class StudentController {
     @GetMapping("/search/{keyword}")
     public Map<String, Object> searchStudents(@PathVariable String keyword) {
         try {
-            List<StudentEntity> studentEntities = studentService.searchStudents(keyword);
+            List<StudentResponse> StudentResponses = studentService.searchStudents(keyword);
 
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("status", HttpStatus.OK.value());
-            response.put("message", "Found " + studentEntities.size() + " students");
-            response.put("data", studentEntities);
+            response.put("message", "Found " + StudentResponses.size() + " students");
+            response.put("data", StudentResponses);
 
             return response;
         } catch (Exception e) {
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.put("message", "Error searching students");
+            response.put("message", e.getMessage());
             response.put("data", 0);
 
             return response;

@@ -1,36 +1,24 @@
-package com.example.sixt.models;
+package com.example.sixt.controllers.responses;
 
 import com.example.sixt.commons.Department;
 import com.example.sixt.commons.Gender;
 import com.example.sixt.commons.StudentStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.sixt.models.AddressEntity;
+import com.example.sixt.models.IdentityDocumentEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-@Entity
-@Table(name = "students",
-        indexes = {
-                @Index(name = "idx_student_id", columnList = "studentId"),
-                @Index(name = "idx_email", columnList = "email")
-        })
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class StudentEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+public class StudentResponse {
     private Long id;
 
-    @Column(name = "student_id", nullable = false, unique = true)
     private String studentId;
 
-    @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     private Date birthday;
 
@@ -47,28 +35,16 @@ public class StudentEntity implements Serializable {
     @Column(unique = true)
     private String email;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
     private String status;
 
-    @Column(name = "created_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
     private Date createdAt;
 
-    @Column(name = "updated_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     private Date updatedAt;
 
-    public String getNationality() {
-        return nationality;
-    }
-
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
-    }
+    List<AddressEntity> addresses;
+    IdentityDocumentEntity identityDocument;
 
     public Long getId() {
         return id;
@@ -76,22 +52,6 @@ public class StudentEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getStudentId() {
@@ -150,6 +110,14 @@ public class StudentEntity implements Serializable {
         this.program = program;
     }
 
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -172,5 +140,37 @@ public class StudentEntity implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<AddressEntity> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressEntity> addresses) {
+        this.addresses = addresses;
+    }
+
+    public IdentityDocumentEntity getIdentityDocument() {
+        return identityDocument;
+    }
+
+    public void setIdentityDocument(IdentityDocumentEntity identityDocument) {
+        this.identityDocument = identityDocument;
     }
 }
