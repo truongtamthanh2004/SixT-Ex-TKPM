@@ -324,6 +324,34 @@ public class StudentServiceImpl implements StudentService {
         return results;
     }
 
+    public List<StudentResponse> searchStudentsByDepartmentAndName(String keyword, String department) {
+        List<StudentResponse> results = new ArrayList<>();
+
+        if (department != null && !department.isEmpty()) {
+            List<StudentEntity> students;
+
+            if (keyword != null && !keyword.isEmpty()) {
+                students = studentRepository.findByDepartmentAndFullNameContainingIgnoreCase(department, keyword);
+            } else {
+                students = studentRepository.findByDepartment(department);
+            }
+
+            results = students.stream()
+                    .map(student -> modelMapper.map(student, StudentResponse.class))
+                    .peek(studentResponse -> {
+                        List<AddressEntity> addresses = addressRepository.findAllByStudentId(studentResponse.getStudentId());
+                        IdentityDocumentEntity identityDocument = identityDocumentRepository.findByStudentId(studentResponse.getStudentId());
+                        studentResponse.setAddresses(addresses);
+                        studentResponse.setIdentityDocument(identityDocument);
+                    })
+                    .collect(Collectors.toList());
+
+        }
+
+        log.info("Students found by department: " + department);
+        return results;
+    }
+
     public void updateStudentFields(StudentEntity existingStudent, StudentUpdateRequest updatedStudent) {
         if (updatedStudent.getFullName() != null) {
             existingStudent.setFullName(updatedStudent.getFullName());

@@ -12,4 +12,5 @@ public interface StudentService {
     void deleteStudent(String studentId);
     StudentResponse updateStudent(String studentId, StudentUpdateRequest student);
     List<StudentResponse> searchStudents(String keyword);
+    List<StudentResponse> searchStudentsByDepartmentAndName(String keyword, String department);
 }

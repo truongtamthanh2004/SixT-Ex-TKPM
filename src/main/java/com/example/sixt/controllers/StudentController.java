@@ -164,4 +164,31 @@ public class StudentController {
             return response;
         }
     }
+
+    @GetMapping("/search-by-department-and-name")
+    public Map<String, Object> searchStudents(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = true) String department) {
+        try {
+            List<StudentResponse> StudentResponses = studentService.searchStudentsByDepartmentAndName(keyword, department);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("status", HttpStatus.OK.value());
+            response.put("message", "Found " + StudentResponses.size() + " students");
+            response.put("data", StudentResponses);
+
+            log.info("Found " + StudentResponses.size() + " students");
+
+            return response;
+        } catch (Exception e) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.put("message", e.getMessage());
+            response.put("data", 0);
+
+            log.error(e.getMessage());
+
+            return response;
+        }
+    }
 }
