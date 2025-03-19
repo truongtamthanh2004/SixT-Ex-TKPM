@@ -5,9 +5,7 @@ import com.example.sixt.controllers.requests.StudentCreationRequest;
 import com.example.sixt.controllers.requests.StudentUpdateRequest;
 import com.example.sixt.controllers.responses.StudentResponse;
 import com.example.sixt.exceptions.InvalidDataException;
-import com.example.sixt.models.AddressEntity;
-import com.example.sixt.models.IdentityDocumentEntity;
-import com.example.sixt.models.StudentEntity;
+import com.example.sixt.models.*;
 import com.example.sixt.repositories.*;
 import com.example.sixt.services.StudentService;
 import org.modelmapper.ModelMapper;
@@ -81,19 +79,24 @@ public class StudentServiceImpl implements StudentService {
                 throw new InvalidDataException("Email already exists.");
             }
 
-            if (student.getDepartment() != null && departmentRepository.findByName(student.getDepartment()) == null) {
+            DepartmentEntity departmentEntity = departmentRepository.findByName(student.getDepartment());
+            if (student.getDepartment() != null && departmentEntity == null) {
                 throw new InvalidDataException("Department does not exist.");
             }
-            if (student.getProgram() != null && programRepository.findByName(student.getProgram()) == null) {
+            ProgramEntity programEntity = programRepository.findByName(student.getProgram());
+            if (student.getProgram() != null && programEntity == null) {
                 throw new InvalidDataException("Program does not exist.");
             }
-            if (student.getStatus() != null && studentStatusRepository.findByName(student.getStatus()) == null) {
+            StudentStatusEntity studentStatusEntity = studentStatusRepository.findByName(student.getStatus());
+            if (student.getStatus() != null && studentStatusEntity == null) {
                 throw new InvalidDataException("Status does not exist.");
             }
 
             StudentEntity studentEntity = modelMapper.map(student, StudentEntity.class);
             studentEntity.setId(null);
-            studentEntity.setNationality(student.getNationality());
+            studentEntity.setDepartment(departmentEntity.getId());
+            studentEntity.setProgram(programEntity.getId());
+            studentEntity.setStatus(studentStatusEntity.getId());
             List<AddressEntity> addressEntities = student.getAddresses().stream()
                     .map(address -> modelMapper.map(address, AddressEntity.class))
                     .collect(Collectors.toList());
@@ -108,8 +111,11 @@ public class StudentServiceImpl implements StudentService {
             StudentResponse studentResponse = modelMapper.map(savedStudent, StudentResponse.class);
             studentResponse.setAddresses(savedAddressEntities);
             studentResponse.setIdentityDocument(identityDocument);
+            studentResponse.setDepartment(departmentEntity.getName());
+            studentResponse.setProgram(programEntity.getName());
+            studentResponse.setStatus(studentStatusEntity.getName());
 
-            redisTemplate.opsForValue().set("student:" + student.getStudentId(), studentResponse);
+            redisTemplate.opsForValue().set("student:" + student.getStudentId(), savedStudent);
 
             log.info("Student added successfully.");
 
@@ -187,7 +193,8 @@ public class StudentServiceImpl implements StudentService {
                 throw new InvalidDataException("Student not found.");
             }
 
-            updateStudentFields(existingStudent, updatedStudent);
+            StudentResponse studentResponse = modelMapper.map(existingStudent, StudentResponse.class);
+            updateStudentFields(existingStudent, updatedStudent, studentResponse);
             List <AddressEntity> savedAddressEntities = new ArrayList<>();
             IdentityDocumentEntity savedIdentityDocument = new IdentityDocumentEntity();
             if (updatedStudent.getAddresses() != null) {
@@ -208,11 +215,10 @@ public class StudentServiceImpl implements StudentService {
 
             studentRepository.save(existingStudent);
 
-            StudentResponse studentResponse = modelMapper.map(existingStudent, StudentResponse.class);
             studentResponse.setAddresses(savedAddressEntities.size() != 0 ? savedAddressEntities : addressRepository.findAllByStudentId(studentId));
             studentResponse.setIdentityDocument(savedIdentityDocument.getId() != null ? savedIdentityDocument : identityDocumentRepository.findByStudentId(studentId));
 
-            redisTemplate.opsForValue().set("student:" + studentId, studentResponse);
+            redisTemplate.opsForValue().set("student:" + studentId, existingStudent);
 
             log.info("Student updated successfully.");
             return studentResponse;
@@ -251,6 +257,9 @@ public class StudentServiceImpl implements StudentService {
                         StudentResponse studentResponse = modelMapper.map(cachedStudent, StudentResponse.class);
                         studentResponse.setAddresses(addressRepository.findAllByStudentId(cachedStudent.getStudentId()));
                         studentResponse.setIdentityDocument(identityDocumentRepository.findByStudentId(cachedStudent.getStudentId()));
+                        studentResponse.setDepartment(departmentRepository.findById(cachedStudent.getDepartment()).get().getName());
+                        studentResponse.setProgram(programRepository.findById(cachedStudent.getProgram()).get().getName());
+                        studentResponse.setStatus(studentStatusRepository.findById(cachedStudent.getStatus()).get().getName());
                         results.add(studentResponse);
                         return results;
                     }
@@ -260,7 +269,10 @@ public class StudentServiceImpl implements StudentService {
                         StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
                         studentResponse.setAddresses(addressRepository.findAllByStudentId(student.getStudentId()));
                         studentResponse.setIdentityDocument(identityDocumentRepository.findByStudentId(student.getStudentId()));
-                        redisTemplate.opsForValue().set("student:" + student.getStudentId(), studentResponse);
+                        studentResponse.setDepartment(departmentRepository.findById(student.getDepartment()).get().getName());
+                        studentResponse.setProgram(programRepository.findById(student.getProgram()).get().getName());
+                        studentResponse.setStatus(studentStatusRepository.findById(student.getStatus()).get().getName());
+                        redisTemplate.opsForValue().set("student:" + student.getStudentId(), student);
                         results.add(studentResponse);
                     }
                 } else {
@@ -291,6 +303,9 @@ public class StudentServiceImpl implements StudentService {
                             StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
                             studentResponse.setAddresses(addressRepository.findAllByStudentId(student.getStudentId()));
                             studentResponse.setIdentityDocument(identityDocumentRepository.findByStudentId(student.getStudentId()));
+                            studentResponse.setDepartment(departmentRepository.findById(student.getDepartment()).get().getName());
+                            studentResponse.setProgram(programRepository.findById(student.getProgram()).get().getName());
+                            studentResponse.setStatus(studentStatusRepository.findById(student.getStatus()).get().getName());
                             results.add(studentResponse);
                         }
                     }
@@ -303,8 +318,11 @@ public class StudentServiceImpl implements StudentService {
                         StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
                         studentResponse.setAddresses(addressRepository.findAllByStudentId(student.getStudentId()));
                         studentResponse.setIdentityDocument(identityDocumentRepository.findByStudentId(student.getStudentId()));
+                        studentResponse.setDepartment(departmentRepository.findById(student.getDepartment()).get().getName());
+                        studentResponse.setProgram(programRepository.findById(student.getProgram()).get().getName());
+                        studentResponse.setStatus(studentStatusRepository.findById(student.getStatus()).get().getName());
                         results.add(studentResponse);
-                        redisTemplate.opsForValue().set("student:" + student.getStudentId(), studentResponse);
+                        redisTemplate.opsForValue().set("student:" + student.getStudentId(), student);
                     }
                 }
             } else {
@@ -329,54 +347,65 @@ public class StudentServiceImpl implements StudentService {
 
         if (department != null && !department.isEmpty()) {
             List<StudentEntity> students;
+            DepartmentEntity departmentEntity = departmentRepository.findByName(department);
 
             if (keyword != null && !keyword.isEmpty()) {
-                students = studentRepository.findByDepartmentAndFullNameContainingIgnoreCase(department, keyword);
+                students = studentRepository.findByDepartmentAndFullNameContainingIgnoreCase(departmentEntity.getId(), keyword);
             } else {
-                students = studentRepository.findByDepartment(department);
+                students = studentRepository.findByDepartment(departmentEntity.getId());
             }
 
-            results = students.stream()
-                    .map(student -> modelMapper.map(student, StudentResponse.class))
-                    .peek(studentResponse -> {
-                        List<AddressEntity> addresses = addressRepository.findAllByStudentId(studentResponse.getStudentId());
-                        IdentityDocumentEntity identityDocument = identityDocumentRepository.findByStudentId(studentResponse.getStudentId());
-                        studentResponse.setAddresses(addresses);
-                        studentResponse.setIdentityDocument(identityDocument);
-                    })
-                    .collect(Collectors.toList());
-
+            for (StudentEntity student : students) {
+                StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
+                studentResponse.setAddresses(addressRepository.findAllByStudentId(student.getStudentId()));
+                studentResponse.setIdentityDocument(identityDocumentRepository.findByStudentId(student.getStudentId()));
+                studentResponse.setDepartment(departmentRepository.findById(student.getDepartment()).get().getName());
+                studentResponse.setProgram(programRepository.findById(student.getProgram()).get().getName());
+                studentResponse.setStatus(studentStatusRepository.findById(student.getStatus()).get().getName());
+                results.add(studentResponse);
+            }
         }
 
         log.info("Students found by department: " + department);
         return results;
     }
 
-    public void updateStudentFields(StudentEntity existingStudent, StudentUpdateRequest updatedStudent) {
+    public void updateStudentFields(StudentEntity existingStudent, StudentUpdateRequest updatedStudent, StudentResponse studentResponse) {
         if (updatedStudent.getFullName() != null) {
             existingStudent.setFullName(updatedStudent.getFullName());
+            studentResponse.setFullName(updatedStudent.getFullName());
         }
         if (updatedStudent.getBirthday() != null) {
             existingStudent.setBirthday(updatedStudent.getBirthday());
+            studentResponse.setBirthday(updatedStudent.getBirthday());
         }
         if (updatedStudent.getGender() != null) {
             existingStudent.setGender(updatedStudent.getGender());
+            studentResponse.setGender(updatedStudent.getGender());
         }
-        if (updatedStudent.getDepartment() != null && departmentRepository.findByName(updatedStudent.getDepartment()) != null) {
-            existingStudent.setDepartment(updatedStudent.getDepartment());
+        DepartmentEntity departmentEntity = departmentRepository.findByName(updatedStudent.getDepartment());
+        if (updatedStudent.getDepartment() != null && departmentEntity != null) {
+            existingStudent.setDepartment(departmentEntity.getId());
+            studentResponse.setDepartment(departmentEntity.getName());
         }
         if (updatedStudent.getCourse() != null) {
             existingStudent.setCourse(updatedStudent.getCourse());
+            studentResponse.setCourse(updatedStudent.getCourse());
         }
-        if (updatedStudent.getProgram() != null && programRepository.findByName(updatedStudent.getProgram()) != null) {
-            existingStudent.setProgram(updatedStudent.getProgram());
+        ProgramEntity programEntity = programRepository.findByName(updatedStudent.getProgram());
+        if (updatedStudent.getProgram() != null && programEntity != null) {
+            existingStudent.setProgram(programEntity.getId());
+            studentResponse.setProgram(programEntity.getName());
         }
 
         if (updatedStudent.getPhoneNumber() != null) {
             existingStudent.setPhoneNumber(updatedStudent.getPhoneNumber());
+            studentResponse.setPhoneNumber(updatedStudent.getPhoneNumber());
         }
-        if (updatedStudent.getStatus() != null && studentStatusRepository.findByName(updatedStudent.getStatus()) != null) {
-            existingStudent.setStatus(updatedStudent.getStatus());
+        StudentStatusEntity studentStatusEntity = studentStatusRepository.findByName(updatedStudent.getStatus());
+        if (updatedStudent.getStatus() != null && studentStatusEntity != null) {
+            existingStudent.setStatus(studentStatusEntity.getId());
+            studentResponse.setStatus(studentStatusEntity.getName());
         }
     }
 

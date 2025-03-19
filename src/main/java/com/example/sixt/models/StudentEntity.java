@@ -37,10 +37,10 @@ public class StudentEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String department;
+    private Long department;
 
     private String course;
-    private String program;
+    private Long program;
 
     private String nationality;
 
@@ -50,7 +50,7 @@ public class StudentEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    private String status;
+    private Long status;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
@@ -126,11 +126,11 @@ public class StudentEntity implements Serializable {
         this.gender = gender;
     }
 
-    public String getDepartment() {
+    public Long getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Long department) {
         this.department = department;
     }
 
@@ -142,11 +142,11 @@ public class StudentEntity implements Serializable {
         this.course = course;
     }
 
-    public String getProgram() {
+    public Long getProgram() {
         return program;
     }
 
-    public void setProgram(String program) {
+    public void setProgram(Long program) {
         this.program = program;
     }
 
@@ -166,11 +166,11 @@ public class StudentEntity implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 }
