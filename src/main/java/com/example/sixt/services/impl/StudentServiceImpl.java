@@ -13,6 +13,8 @@ import com.example.sixt.services.StudentService;
 import org.modelmapper.ModelMapper;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,6 +38,7 @@ public class StudentServiceImpl implements StudentService {
     private final ProgramRepository programRepository;
     private final DepartmentRepository departmentRepository;
     private final StudentStatusRepository studentStatusRepository;
+    private static final Logger log = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository,
@@ -97,6 +100,7 @@ public class StudentServiceImpl implements StudentService {
             addressEntities.forEach(address -> address.setStudentId(studentEntity.getStudentId()));
             IdentityDocumentEntity identityDocumentEntity = modelMapper.map(student.getIdentityDocument(), IdentityDocumentEntity.class);
             identityDocumentEntity.setStudentId(studentEntity.getStudentId());
+
             List<AddressEntity> savedAddressEntities = addressRepository.saveAll(addressEntities);
             IdentityDocumentEntity identityDocument = identityDocumentRepository.save(identityDocumentEntity);
             StudentEntity savedStudent = studentRepository.save(studentEntity);
@@ -106,6 +110,9 @@ public class StudentServiceImpl implements StudentService {
             studentResponse.setIdentityDocument(identityDocument);
 
             redisTemplate.opsForValue().set("student:" + student.getStudentId(), studentResponse);
+
+            log.info("Student added successfully.");
+
             return studentResponse;
         }
         catch (InvalidDataException e) {
@@ -140,15 +147,21 @@ public class StudentServiceImpl implements StudentService {
                 identityDocumentRepository.deleteByStudentId(studentId);
 
                 redissonClient.getBucket("student:" + studentId).delete();
+
+                log.info("Student deleted successfully.");
             } else {
+                log.error("Student not found.");
                 throw new InvalidDataException("Student not found.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            log.error("Thread interrupted while trying to acquire lock.");
             throw new RuntimeException("Thread was interrupted while trying to acquire lock.");
         } catch (InvalidDataException e) {
+            log.error(e.getMessage());
             throw new InvalidDataException(e.getMessage());
         } catch (Exception e) {
+            log.error("Error deleting student.");
             throw new RuntimeException("Error deleting student.", e);
         } finally {
             if (lock.isHeldByCurrentThread()) {
@@ -200,16 +213,21 @@ public class StudentServiceImpl implements StudentService {
             studentResponse.setIdentityDocument(savedIdentityDocument.getId() != null ? savedIdentityDocument : identityDocumentRepository.findByStudentId(studentId));
 
             redisTemplate.opsForValue().set("student:" + studentId, studentResponse);
+
+            log.info("Student updated successfully.");
             return studentResponse;
         }
         catch (InterruptedException e) {
+            log.error("Thread interrupted while trying to acquire lock.");
             Thread.currentThread().interrupt();
             throw new RuntimeException("Thread was interrupted while trying to acquire lock.");
         }
         catch (InvalidDataException e) {
+            log.error(e.getMessage());
             throw new InvalidDataException(e.getMessage());
         }
         catch (Exception e) {
+            log.error("Error updating student.");
             throw new RuntimeException("Error updating student.");
         }
         finally {
@@ -249,6 +267,7 @@ public class StudentServiceImpl implements StudentService {
                     throw new RuntimeException("Cannot acquire lock for student search: " + keyword);
                 }
             } catch (InterruptedException e) {
+                log.error("Thread interrupted while searching student by id.");
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("Thread interrupted while searching student.");
             } finally {
@@ -256,6 +275,8 @@ public class StudentServiceImpl implements StudentService {
                     lock.unlock();
                 }
             }
+
+            log.info("Student found by id: " + keyword);
             return results;
         }
 
@@ -290,6 +311,7 @@ public class StudentServiceImpl implements StudentService {
                 throw new RuntimeException("Cannot acquire lock for student name search: " + keyword);
             }
         } catch (InterruptedException e) {
+            log.error("Thread interrupted while searching students by name.");
             Thread.currentThread().interrupt();
             throw new RuntimeException("Thread interrupted while searching students by name.");
         } finally {
@@ -298,6 +320,7 @@ public class StudentServiceImpl implements StudentService {
             }
         }
 
+        log.info("Students found by name: " + keyword);
         return results;
     }
 
