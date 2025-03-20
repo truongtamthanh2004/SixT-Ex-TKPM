@@ -109,3 +109,83 @@ docker-compose up -d --build
 | **PUT** | `/api/v1/students/update/{studentId}` | Update a student |
 | **DELETE** | `/api/v1/students/delete/{studentId}` | Delete a student |
 | **GET** | `/api/v1/students/search/{keyword}` | Search students by Student ID or Name |
+
+# Version 2.0
+
+## Overview
+This project provides APIs for importing and exporting data in CSV and JSON formats, along with various functionalities for managing department data.
+
+## API Endpoints
+
+### Import CSV
+```http
+POST /import/csv
+```
+**Description:** Imports department data from a CSV file.
+
+**Request:**
+- `file` (MultipartFile) - The CSV file to be uploaded.
+
+**Response:**
+```json
+{
+  "status": "200",
+  "message": "Import CSV successfully!",
+  "data": 1
+}
+```
+
+### Import JSON
+```http
+POST /import/json
+```
+**Description:** Imports department data from a JSON file.
+
+**Request:**
+- `file` (MultipartFile) - The JSON file to be uploaded.
+
+**Response:**
+```json
+{
+  "status": "200",
+  "message": "Import JSON successfully!",
+  "data": <number_of_records>
+}
+```
+
+### Export JSON
+```http
+GET /export/json
+```
+**Description:** Exports all department data into a JSON file.
+
+**Response:**
+- Returns a downloadable JSON file containing department data.
+
+### Export CSV
+```http
+GET /export/csv
+```
+**Description:** Exports all department data into a CSV file.
+
+**Response:**
+- Returns a downloadable CSV file containing department data.
+
+### Add, modify name of departure, program, student status
+```http
+POST /
+PUT /{id}
+```
+**Description:** Imports department data from a CSV file.
+---
+
+## Feature Demonstration
+
+Below are screenshots showcasing the implemented features:
+
+![Import CSV Feature](images/import_csv.png)
+![Import JSON Feature](images/import_json.png)
+![Export JSON Feature](images/export_json.png)
+![Export CSV Feature](images/export_csv.png)
+
+For detailed usage and setup, refer to the full documentation.
