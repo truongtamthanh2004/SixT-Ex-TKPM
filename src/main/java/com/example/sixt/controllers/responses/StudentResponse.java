@@ -1,63 +1,72 @@
-package com.example.sixt.controllers.requests;
+package com.example.sixt.controllers.responses;
 
 import com.example.sixt.commons.Department;
 import com.example.sixt.commons.Gender;
 import com.example.sixt.commons.StudentStatus;
+import com.example.sixt.models.AddressEntity;
+import com.example.sixt.models.IdentityDocumentEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class StudentCreationRequest implements Serializable {
-    @NotBlank(message = "Student id must be not blank")
+public class StudentResponse {
+    private Long id;
+
     private String studentId;
 
-    @NotBlank(message = "First name must be not blank")
     private String fullName;
 
+    @Temporal(TemporalType.DATE)
     private Date birthday;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @NotBlank(message = "Department must be not blank")
     private String department;
 
     private String course;
-
-    @NotBlank(message = "Program must be not blank")
     private String program;
+
     private String nationality;
 
-    @Email(message = "Email invalid")
+    @Column(unique = true)
     private String email;
 
-    @Pattern(regexp = "^(0[3-9][0-9]{8}|\\+84[3-9][0-9]{8})$", message = "Invalid phone number format")
     private String phoneNumber;
 
     private String status;
 
-    private List<AddressRequest> addresses;
+    private Date createdAt;
 
-    private IdentityDocumentRequest identityDocument;
+    private Date updatedAt;
 
-    public @NotBlank(message = "Student id must be not blank") String getStudentId() {
+    List<AddressEntity> addresses;
+    IdentityDocumentEntity identityDocument;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(@NotBlank(message = "Student id must be not blank") String studentId) {
+    public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
 
-    public @NotBlank(message = "First name must be not blank") String getFullName() {
+    public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(@NotBlank(message = "First name must be not blank") String fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
@@ -109,11 +118,11 @@ public class StudentCreationRequest implements Serializable {
         this.nationality = nationality;
     }
 
-    public @Email(message = "Email invalid") String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(@Email(message = "Email invalid") String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -133,19 +142,35 @@ public class StudentCreationRequest implements Serializable {
         this.status = status;
     }
 
-    public List<AddressRequest> getAddresses() {
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<AddressEntity> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<AddressRequest> addresses) {
+    public void setAddresses(List<AddressEntity> addresses) {
         this.addresses = addresses;
     }
 
-    public IdentityDocumentRequest getIdentityDocument() {
+    public IdentityDocumentEntity getIdentityDocument() {
         return identityDocument;
     }
 
-    public void setIdentityDocument(IdentityDocumentRequest identityDocument) {
+    public void setIdentityDocument(IdentityDocumentEntity identityDocument) {
         this.identityDocument = identityDocument;
     }
 }

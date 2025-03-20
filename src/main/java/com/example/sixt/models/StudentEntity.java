@@ -3,6 +3,7 @@ package com.example.sixt.models;
 import com.example.sixt.commons.Department;
 import com.example.sixt.commons.Gender;
 import com.example.sixt.commons.StudentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,6 +17,7 @@ import java.util.Date;
                 @Index(name = "idx_student_id", columnList = "studentId"),
                 @Index(name = "idx_email", columnList = "email")
         })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StudentEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +37,12 @@ public class StudentEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    private Department department;
+    private Long department;
 
     private String course;
-    private String program;
-    private String address;
+    private Long program;
+
+    private String nationality;
 
     @Column(unique = true)
     private String email;
@@ -48,8 +50,7 @@ public class StudentEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    private StudentStatus status;
+    private Long status;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
@@ -60,6 +61,14 @@ public class StudentEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date updatedAt;
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
 
     public Long getId() {
         return id;
@@ -117,11 +126,11 @@ public class StudentEntity implements Serializable {
         this.gender = gender;
     }
 
-    public Department getDepartment() {
+    public Long getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department department) {
+    public void setDepartment(Long department) {
         this.department = department;
     }
 
@@ -133,20 +142,12 @@ public class StudentEntity implements Serializable {
         this.course = course;
     }
 
-    public String getProgram() {
+    public Long getProgram() {
         return program;
     }
 
-    public void setProgram(String program) {
+    public void setProgram(Long program) {
         this.program = program;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getEmail() {
@@ -165,11 +166,11 @@ public class StudentEntity implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public StudentStatus getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(StudentStatus status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 }

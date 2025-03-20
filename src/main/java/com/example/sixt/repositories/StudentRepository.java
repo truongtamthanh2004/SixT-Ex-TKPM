@@ -12,6 +12,8 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     StudentEntity findByStudentId(String studentId);
     StudentEntity findByEmail(String email);
+    List<StudentEntity> findByDepartment(Long department);
+    List<StudentEntity> findByDepartmentAndFullNameContainingIgnoreCase(Long department, String fullName);
 
     @Query("SELECT s FROM StudentEntity s WHERE s.studentId LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<StudentEntity> findByStudentIdOrFullName(@Param("keyword") String keyword);
