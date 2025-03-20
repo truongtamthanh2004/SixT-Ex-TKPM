@@ -176,7 +176,7 @@ GET /export/csv
 POST /
 PUT /{id}
 ```
-**Description:** Imports department data from a CSV file.
+**Description:** add, modify name of departure, program and student status
 ---
 
 ## Feature Demonstration
