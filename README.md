@@ -183,7 +183,7 @@ PUT /{id}
 
 Below are screenshots showcasing the implemented features:
 
-![Find by Departure and name](https://imgur.com/WyjDNJF)
+![Find by Departure and name](https://i.imgur.com/WyjDNJF.png)
 ![Logging mechanism](https://imgur.com/U8RIa0g)
 ![Modify name, add a new departure, student status and program](https://imgur.com/JDfGSl9)
 ![Import CSV Feature](https://imgur.com/znYHmKA)
