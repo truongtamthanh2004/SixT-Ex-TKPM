@@ -183,9 +183,14 @@ PUT /{id}
 
 Below are screenshots showcasing the implemented features:
 
-![Import CSV Feature](images/import_csv.png)
-![Import JSON Feature](images/import_json.png)
-![Export JSON Feature](images/export_json.png)
-![Export CSV Feature](images/export_csv.png)
+![Find by Departure and name](https://imgur.com/WyjDNJF)
+![Logging mechanism](https://imgur.com/U8RIa0g)
+![Modify name, add a new departure, student status and program](https://imgur.com/JDfGSl9)
+![Import CSV Feature](https://imgur.com/znYHmKA)
+![Import JSON Feature](https://imgur.com/5oOfpIr)
+![Export JSON Feature](https://imgur.com/N26pIqU)
+![Export JSON Feature](https://imgur.com/GepXiuz)
+![Export CSV Feature](https://imgur.com/mMpaqlb)
+![Export CSV Feature](https://imgur.com/kxz8JB0)
 
 For detailed usage and setup, refer to the full documentation.
